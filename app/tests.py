@@ -1,6 +1,9 @@
+from django.contrib import auth
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
+
+from app.models import Topic
 
 
 def create_user(username='user', password='123', email='user@qq.com'):
@@ -85,3 +88,78 @@ class UserRegisterTest(TestCase):
         self.client.post(reverse('app:register'), data=data)
         user = User.objects.get(username=data['user'])
         self.assertEqual(data['user'], user.username)
+
+
+# 创建话题
+def create_topic(user_id, title='Tomorrow?', content='Tomorrow will be better.'):
+    return Topic.objects.create(user_id=user_id, title=title, content=content)
+
+
+# 首页测试
+class IndexViewTests(TestCase):
+    # 没有话题发布
+    def test_no_topic(self):
+        response = self.client.get(reverse('app:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['topic_list'], [])
+
+    # 仅有一个话题
+    def test_one_topic(self):
+        user = create_user()
+        topic = create_topic(user.id)
+        response = self.client.get(reverse('app:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['topic_list'], ['<Topic: Topic object (1)>'])
+        self.assertContains(response, topic.title)
+
+    # 有多个话题
+    def test_more_topic(self):
+        user = create_user()
+        create_topic(user.id)
+        create_topic(user.id)
+        response = self.client.get(reverse('app:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(
+            response.context['topic_list'],
+            ['<Topic: Topic object (2)>', '<Topic: Topic object (1)>']
+        )
+
+
+# 话题测试
+class TopicViewTests(TestCase):
+    def setUp(self) -> None:
+        # 默认用户已登录
+        self.user = create_user()
+        self.client.get(reverse('app:get_ver_code'))
+        ver_code = self.client.session.get('ver_code')
+        self.client.post(reverse('app:login'), data={'user': 'user', 'pwd': '123', 'verCode': ver_code})
+
+    # 发布话题成功
+    def test_pub_topic_success(self):
+        self.client.post(reverse('app:topic_pub'), data={'title': 'Tomorrow?', 'content': 'Tomorrow will be better.'})
+        response = self.client.get(reverse('app:index'))
+        self.assertContains(response, 'Tomorrow?')
+        self.assertQuerysetEqual(response.context['topic_list'], ['<Topic: Topic object (2)>'])
+
+    # 删除成功
+    def test_del_topic_success(self):
+        topic = create_topic(self.user.id)
+        response = self.client.get(reverse('app:index'))
+        self.assertQuerysetEqual(response.context['topic_list'], ['<Topic: Topic object (1)>'])
+        self.client.get(reverse('app:topic_del', kwargs={'topic_id': topic.id}))
+        response = self.client.get(reverse('app:index'))
+        self.assertQuerysetEqual(response.context['topic_list'], [])
+
+    # 删除非本人发布的话题
+    def test_del_topic_that_are_not_personal(self):
+        user2 = create_user(username='user2')
+        topic2 = create_topic(user_id=user2.id)
+        response = self.client.get(reverse('app:topic_del', kwargs={'topic_id': topic2.id}))
+        self.assertEqual(response.status_code, 404)
+
+    # 话题查看
+    def test_view_topic(self):
+        topic = create_topic(self.user.id)
+        response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': topic.id}))
+        self.assertContains(response, topic.title)
+        self.assertContains(response, topic.content)

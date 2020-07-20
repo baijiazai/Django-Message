@@ -4,14 +4,18 @@
     首页
 {% endblock %}
 
-{% block header %}
-    <hr>
-    <a href="{% url 'app:index' %}">首页</a>
-    {% if request.user.username %}
-        用户：{{ request.user.username }}
-        <a href="{% url 'app:logout' %}">退出登录</a>
-    {% else %}
-        <a href="{% url 'app:login' %}">登录</a>
-    {% endif %}
-    <hr>
+{% block content %}
+    <ul>
+        {% for topic in topic_list %}
+            <li>
+                <div>
+                    {{ topic.user.username }} | {{ topic.pub_date }} |
+                    {% if topic.user.id == request.user.id %}
+                        <a href="{% url 'app:topic_del' topic.id %}">删除</a>
+                    {% endif %}
+                </div>
+                <div><a href="{% url 'app:topic_view' topic.id %}"><strong>{{ topic.title }}</strong></a></div>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

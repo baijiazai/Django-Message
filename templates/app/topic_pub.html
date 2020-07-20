@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+
+{% block title %}
+    发布话题
+{% endblock %}
+
+{% block content %}
+    <h1>发布话题</h1>
+    <form action="{% url 'app:topic_pub' %}" method="post">
+        {% csrf_token %}
+        <label for="title">题目：<input type="text" id="title" name="title" maxlength="64" required></label><br>
+        <label for="content">内容：<textarea id="content" name="content" cols="32" rows="16" required></textarea></label>
+        <br><input type="submit" value="发布" id="sub">
+    </form>
+{% endblock %}
