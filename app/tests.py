@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from app.models import Topic
+from app.models import Topic, LeaveWord
 
 
 def create_user(username='user', password='123', email='user@qq.com'):
@@ -109,7 +109,7 @@ class IndexViewTests(TestCase):
         topic = create_topic(user.id)
         response = self.client.get(reverse('app:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context['topic_list'], ['<Topic: Topic object (1)>'])
+        self.assertQuerysetEqual(response.context['topic_list'], ['<Topic: Topic object (3)>'])
         self.assertContains(response, topic.title)
 
     # 有多个话题
@@ -163,3 +163,59 @@ class TopicViewTests(TestCase):
         response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': topic.id}))
         self.assertContains(response, topic.title)
         self.assertContains(response, topic.content)
+
+
+# 创建留言
+def create_leave_word(user_id, topic_id, content='This good.'):
+    return LeaveWord.objects.create(user_id=user_id, topic_id=topic_id, content=content)
+
+
+# 留言测试
+class LeaveWordViewTests(TestCase):
+    def setUp(self) -> None:
+        self.user = create_user()
+        self.client.get(reverse('app:get_ver_code'))
+        ver_code = self.client.session.get('ver_code')
+        self.client.post(reverse('app:login'), data={'user': 'user', 'pwd': '123', 'verCode': ver_code})
+        self.topic = create_topic(self.user.id)
+
+    # 该话题没有留言
+    def test_no_leave_word(self):
+        response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': self.topic.id}))
+        self.assertQuerysetEqual(response.context['leave_word_list'], [])
+
+    # 该话题仅有一个留言
+    def test_one_topic(self):
+        create_leave_word(user_id=self.user.id, topic_id=self.topic.id)
+        response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': self.topic.id}))
+        self.assertQuerysetEqual(response.context['leave_word_list'], ['<LeaveWord: LeaveWord object (5)>'])
+
+    # 该话题有多个留言
+    def test_more_topic(self):
+        create_leave_word(user_id=self.user.id, topic_id=self.topic.id)
+        create_leave_word(user_id=self.user.id, topic_id=self.topic.id)
+        response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': self.topic.id}))
+        self.assertQuerysetEqual(
+            response.context['leave_word_list'],
+            ['<LeaveWord: LeaveWord object (4)>', '<LeaveWord: LeaveWord object (3)>']
+        )
+
+    # 发表留言成功
+    def test_pub_leave_word_success(self):
+        self.client.post(reverse('app:leave_word_pub'), data={'topicId': self.topic.id, 'content': 'This good.'})
+        response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': self.topic.id}))
+        self.assertContains(response, 'This good.')
+
+    # 删除留言成功
+    def test_del_leave_word_success(self):
+        leave_word = create_leave_word(user_id=self.user.id, topic_id=self.topic.id)
+        self.client.get(reverse('app:leave_word_del', kwargs={'leave_word_id': leave_word.id}))
+        response = self.client.get(reverse('app:topic_view', kwargs={'topic_id': self.topic.id}))
+        self.assertQuerysetEqual(response.context['leave_word_list'], [])
+
+    # 删除非本人发表的留言
+    def test_del_leave_word_that_are_not_personal(self):
+        user2 = create_user(username='user2')
+        leave_word2 = create_leave_word(user_id=user2.id, topic_id=self.topic.id)
+        response = self.client.get(reverse('app:leave_word_del', kwargs={'leave_word_id': leave_word2.id}))
+        self.assertEqual(response.status_code, 404)

@@ -9,4 +9,21 @@
     <h3>发布者：{{ topic.user.username }}</h3>
     <p>{{ topic.content }}</p>
     <h6>{{ topic.pub_date }}</h6>
+    <hr>
+    <ul>
+        {% for leave_word in leave_word_list %}
+            <li>
+                {{ leave_word.user.username }} : {{ leave_word.content }} | <small>{{ leave_word.pub_date }}</small>
+                {% if leave_word.user.id == request.user.id %}
+                    | <a href="{% url 'app:leave_word_del' leave_word.id %}">删除</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <form action="{% url 'app:leave_word_pub' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="topicId" value="{{ topic.id }}">
+        <textarea name="content" cols="16" rows="8" placeholder="留下我的话" required></textarea><br>
+        <input type="submit" value="发送">
+    </form>
 {% endblock %}

@@ -16,5 +16,10 @@ urlpatterns = [
         path('<int:topic_id>', topic.topic_view, name='topic_view'),
         path('pub', topic.topic_pub, name='topic_pub'),
         path('del/<int:topic_id>', topic.topic_del, name='topic_del')
+    ])),
+    # 留言发送、删除
+    path('leave_word', include([
+        path('pub', topic.leave_word_pub, name='leave_word_pub'),
+        path('del/<int:leave_word_id>', topic.leave_word_del, name='leave_word_del')
     ]))
 ]
