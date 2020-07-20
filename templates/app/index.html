@@ -1,0 +1,17 @@
+{% extends 'app/base.html' %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block header %}
+    <hr>
+    <a href="{% url 'app:index' %}">首页</a>
+    {% if request.user.username %}
+        用户：{{ request.user.username }}
+        <a href="{% url 'app:logout' %}">退出登录</a>
+    {% else %}
+        <a href="{% url 'app:login' %}">登录</a>
+    {% endif %}
+    <hr>
+{% endblock %}

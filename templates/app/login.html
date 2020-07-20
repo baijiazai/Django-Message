@@ -1,0 +1,36 @@
+{% extends 'app/base.html' %}
+
+{% block title %}
+    登录
+{% endblock %}
+
+{% block content %}
+    <h1>登录</h1>
+    <form action="{% url 'app:login' %}" method="post">
+        {% csrf_token %}
+        <span id="msg" style="color: red;"></span>
+        <label for="user">用户名：<input type="text" id="user" name="user" maxlength="150" required></label><br>
+        <label for="pwd">密码：<input type="password" id="pwd" name="pwd" maxlength="128" required></label><br>
+        <label for="verCode">验证码：
+            <input type="text" maxlength="4" minlength="4" id="verCode" name="verCode" required>
+            <img src="{% url 'app:get_ver_code' %}" alt="验证码" id="imgCode" style="width: 120px;">
+        </label><br>
+        <input type="submit" value="登录" id="sub"> <a href="{% url 'app:register' %}">注册</a>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let $msg = $('#msg');
+
+        {% if msg %}
+            // 后端返回的提示
+            $msg.text('{{ msg }}');
+        {% endif %}
+
+        // 点击验证码图片更新
+        $('#imgCode').click(function () {
+            $(this).attr('src', "{% url 'app:get_ver_code' %}?t=" + Math.random() * 10);
+        });
+    </script>
+{% endblock %}

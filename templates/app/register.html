@@ -1,0 +1,50 @@
+{% extends 'app/base.html' %}
+
+{% block title %}
+    注册
+{% endblock %}
+
+{% block content %}
+    <h1>注册</h1>
+    <form action="{% url 'app:register' %}" method="post">
+        {% csrf_token %}
+        <span id="msg" style="color: red;"></span>
+        <label for="email">邮箱：<input type="email" id="email" name="email" maxlength="254" required></label><br>
+        <label for="user">用户名：<input type="text" id="user" name="user" maxlength="150" required></label><br>
+        <label for="pwd">密码：<input type="password" id="pwd" name="pwd" maxlength="128" required></label><br>
+        <label for="pwd2">确认密码：<input type="password" id="pwd2" name="pwd2" maxlength="128" required></label><br>
+        <label for="verCode">验证码：
+            <input type="text" maxlength="4" minlength="4" id="verCode" name="verCode" required>
+            <img src="{% url 'app:get_ver_code' %}" alt="验证码" id="imgCode" style="width: 120px;">
+        </label><br>
+        <input type="submit" value="注册" id="sub"> <a href="{% url 'app:login' %}">返回登录</a>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+            let $msg = $('#msg');
+
+            {% if msg %}
+                // 后端返回的提示
+                $msg.text('{{ msg }}');
+            {% endif %}
+
+            // 点击验证码图片更新
+            $('#imgCode').click(function () {
+                $(this).attr('src', "{% url 'app:get_ver_code' %}?t=" + Math.random() * 10);
+            });
+
+            // 提交按钮点击事件
+            $('#sub').click(function () {
+                // 如果两次输入的密码不一致则阻止提交并给出相应的提示
+                if ($('#pwd').val() !== $('#pwd2').val()) {
+                    $msg.text('两次输入的密码不一致！');
+                    return false;
+                }
+                return true;
+            });
+        })
+    </script>
+{% endblock %}
