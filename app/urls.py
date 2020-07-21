@@ -18,8 +18,13 @@ urlpatterns = [
         path('del/<int:topic_id>', topic.topic_del, name='topic_del')
     ])),
     # 留言发送、删除
-    path('leave_word', include([
+    path('leave_word/', include([
         path('pub', topic.leave_word_pub, name='leave_word_pub'),
-        path('del/<int:leave_word_id>', topic.leave_word_del, name='leave_word_del')
+        path('del/<int:leave_word_id>', topic.leave_word_del, name='leave_word_del'),
+        # 留言回复发送、删除
+        path('reply/', include([
+            path('pub', topic.leave_word_reply_pub, name='leave_word_reply_pub'),
+            path('del/<int:leave_word_reply_id>', topic.leave_word_reply_del, name='leave_word_reply_del')
+        ]))
     ]))
 ]

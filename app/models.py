@@ -23,3 +23,14 @@ class LeaveWord(models.Model):
 
     class Meta:
         verbose_name_plural = '留言'
+
+
+# 留言回复
+class LeaveWordReply(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
+    leave_word = models.ForeignKey(LeaveWord, on_delete=models.CASCADE, verbose_name='留言')
+    content = models.CharField('内容', max_length=255)
+    pub_date = models.DateTimeField('发布时间', auto_now=True)
+
+    class Meta:
+        verbose_name_plural = '留言回复'
