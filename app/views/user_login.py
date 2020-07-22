@@ -24,7 +24,7 @@ def login(request):
             # 如果 user 不为空，则给验证成功的用户加 session，将 request.user 赋值为用户对象
             if user:
                 auth.login(request, user)
-                return redirect(reverse('app:index'))
+                return redirect(reverse('app:index', kwargs={'language': 'all'}))
             # 若 user 为空，则给出相应的提示
             return render(request, 'app/login.html', {'msg': '用户名或密码错误！'})
         return render(request, 'app/login.html', {'msg': '验证码错误！'})

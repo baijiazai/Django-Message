@@ -7,7 +7,7 @@ from app.utils.page import Pagination
 def index(request, language):
     # 以语言为过滤条件
     if language == 'all':
-        topic_queryset = Topic.objects.all().order_by('-pub_date', '-reply_num')
+        topic_queryset = Topic.objects.all().order_by('-reply_num', '-pub_date')
     else:
         topic_queryset = Topic.objects.filter(lang__language=language).order_by('-pub_date', '-reply_num')
     # 获取所有的分类

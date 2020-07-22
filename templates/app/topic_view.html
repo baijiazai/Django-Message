@@ -1,58 +1,92 @@
 {% extends 'app/base.html' %}
+{% load humanize %}
 
 {% block title %}
     {{ topic.title }}
 {% endblock %}
 
 {% block content %}
-    <h1>{{ topic.title }}</h1>
-    <h3>发布者：{{ topic.user.username }}</h3>
-    <p>{{ topic.content }}</p>
-    <h6>{{ topic.pub_date }}</h6>
-    <hr>
-    <ul>
+    <br>
+    <!-- 话题信息 -->
+    <div class="blog-post">
+        <h2 class="blog-post-title">{{ topic.title }}</h2>
+        <p class="blog-post-meta">{{ topic.pub_date }} by <a href="#">{{ topic.user.username }}</a></p>
+        <p>{{ topic.content }}</p>
+        {% if topic.user.id == request.user.id %}
+            <a href="{% url 'app:topic_del' topic.id %}">删除</a>
+        {% endif %}
+        <hr>
+    </div>
+
+    <!-- 留言列表 -->
+    <div class="list-group">
         {% for leave_word in leave_word_list %}
-            <li>
-                {{ leave_word.user.username }} : {{ leave_word.content }} | <small>{{ leave_word.pub_date }}</small> |
-                点赞：{{ leave_word.zan_num }}
-                <a href="javascript:;" class="reply" data-id="{{ leave_word.id }}">回复</a>
-                {% if leave_word.id in leave_word_zan_ids %}
-                    <a href="{% url 'app:leave_word_zan' leave_word.id 'sub' %}">取消点赞</a>
-                {% else %}
-                    <a href="{% url 'app:leave_word_zan' leave_word.id 'add' %}">点赞</a>
-                {% endif %}
-                {% if leave_word.user.id == request.user.id %}
-                    | <a href="{% url 'app:leave_word_del' leave_word.id %}">删除</a>
-                {% endif %}
-                {% if leave_word.leavewordreply_set.all %}
-                    <ul>
-                        {% for leave_word_reply in leave_word.leavewordreply_set.all %}
-                            <li>
-                                {{ leave_word_reply.user.username }} 回复 {{ leave_word.user.username }}
-                                : {{ leave_word_reply.content }} |
-                                <small>{{ leave_word_reply.pub_date }}</small> | 点赞：{{ leave_word_reply.zan_num }}
-                                {% if leave_word_reply.id in leave_word_reply_zan_ids %}
-                                    <a href="{% url 'app:leave_word_reply_zan' leave_word_reply.id 'sub' %}">取消点赞</a>
-                                {% else %}
-                                    <a href="{% url 'app:leave_word_reply_zan' leave_word_reply.id 'add' %}">点赞</a>
-                                {% endif %}
-                                {% if leave_word_reply.user.id == request.user.id %}
-                                    | <a href="{% url 'app:leave_word_reply_del' leave_word_reply.id %}">删除</a>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </li>
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">
+                        {{ leave_word.user.username }}
+                    </h5>
+                    <span class="text-muted">
+                        {{ leave_word.zan_num }}
+                        {% if leave_word.id in leave_word_zan_ids %}
+                            <a href="{% url 'app:leave_word_zan' leave_word.id 'sub' %}">取消点赞</a>
+                        {% else %}
+                            <a href="{% url 'app:leave_word_zan' leave_word.id 'add' %}">点赞</a>
+                        {% endif %}
+                    </span>
+                </div>
+                <p class="mb-1">{{ leave_word.content }}</p>
+                <div class="d-flex w-100 justify-content-between">
+                    <small class="text-muted">{{ leave_word.pub_date }}</small>
+                    <span>
+                        <a href="javascript:;" class="reply" data-id="{{ leave_word.id }}">回复</a>
+                        {% if leave_word.user.id == request.user.id %}
+                            <a href="{% url 'app:leave_word_del' leave_word.id %}">删除</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <!-- 留言回复列表 -->
+            <ul class="list-group">
+                {% for leave_word_reply in leave_word.leavewordreply_set.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ leave_word_reply.user.username }} : {{ leave_word_reply.content }}
+                        <div>
+                            <span class="badge badge-primary badge-pill">{{ leave_word_reply.zan_num }}</span>
+                            {% if leave_word_reply.id in leave_word_reply_zan_ids %}
+                                <a href="{% url 'app:leave_word_reply_zan' leave_word_reply.id 'sub' %}">取消点赞</a>
+                            {% else %}
+                                <a href="{% url 'app:leave_word_reply_zan' leave_word_reply.id 'add' %}">点赞</a>
+                            {% endif %}
+                            <small class="text-muted">{{ leave_word_reply.pub_date|naturaltime }}</small>
+                            {% if leave_word_reply.user.id == request.user.id %}
+                                <a href="{% url 'app:leave_word_reply_del' leave_word_reply.id %}">删除</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <br>
+        {% empty %}
+            <div class="alert alert-light" role="alert">
+                还没有留言呢，抢个沙发
+            </div>
         {% endfor %}
-    </ul>
+    </div>
+
+    <!-- 发送留言表单 -->
     <form action="{% url 'app:leave_word_pub' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="topicId" value="{{ topic.id }}">
-        <textarea name="content" cols="16" rows="8" placeholder="留下我的话" required></textarea><br>
-        <input type="submit" value="发送">
-    </form>
+        <div class="input-group">
+            <textarea class="form-control" aria-label="With textarea" name="content" placeholder="留下我的话" required>
 
+            </textarea>
+            <div class="input-group-append">
+                <input class="btn btn-outline-secondary" type="submit" value="发送">
+            </div>
+        </div>
+    </form>
 {% endblock %}
 
 {% block script %}
@@ -63,10 +97,15 @@
                 let $form = `<form action="{% url 'app:leave_word_reply_pub' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="leaveWordId" value="${$leaveWordId}">
-        <input type="text" name="replyContent" maxlength="255" required>
-        <input type="submit" value="回复">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="回复内容" aria-label="content"
+                   aria-describedby="basic-addon1" name="replyContent" maxlength="255" required>
+            <div class="input-group-append">
+                <input class="btn btn-outline-secondary" type="submit" value="发送">
+            </div>
+        </div>
     </form>`;
-                $(this).parent().html($(this).parent().html() + $form);
+                $(this).parents('.list-group-item').html($(this).parents('.list-group-item').html() + $form);
             });
         })
     </script>

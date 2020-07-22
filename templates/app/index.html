@@ -1,32 +1,80 @@
 {% extends 'app/base.html' %}
+{% load staticfiles %}
 
 {% block title %}
     首页
 {% endblock %}
 
 {% block content %}
-    <div>
-        分类：<a href="{% url 'app:index' 'all' %}">全部</a>
-        {% for category in category_queryset %}
-            <a href="{% url 'app:index' category.language %}">{{ category.language }}</a>
+    <!-- 分类 -->
+    <div class="nav-scroller py-1 mb-2">
+        <nav class="nav d-flex justify-content-between">
+            <a class="p-2 text-muted" href="{% url 'app:index' 'all' %}">all</a>
+            {% for category in category_queryset %}
+                <a class="p-2 text-muted" href="{% url 'app:index' category.language %}">{{ category.language }}</a>
+            {% endfor %}
+        </nav>
+    </div>
+
+    <!-- 公告栏 -->
+    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark">
+        <div class="col-md-6 px-0">
+            <h1 class="display-4 font-italic">程序员专区</h1>
+            <p class="lead my-3">分享经验，让后人少踩坑</p>
+            {# <p class="lead mb-0"><a href="#" class="text-white font-weight-bold">Continue reading...</a></p> #}
+        </div>
+    </div>
+
+    <!-- 话题列表 -->
+    <div class="row mb-2">
+        {% for topic in topic_list %}
+            {% if forloop.counter|divisibleby:2 %}
+                <div class="col-md-6">
+                    <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-primary">{{ topic.reply_num }}</strong>
+                            <h3 class="mb-0 text-line-1">{{ topic.title }}</h3>
+                            <div class="mb-1 text-muted">{{ topic.pub_date }}</div>
+                            <p class="card-text mb-auto text-line-3">{{ topic.content }}</p>
+                            <a href="{% url 'app:topic_view' topic.id %}" class="stretched-link">查看详情</a>
+                        </div>
+                        <div class="col-auto d-none d-lg-block">
+                            <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                                 preserveAspectRatio="xMidYMid slice" focusable="false" role="img"
+                                 aria-label="Placeholder: Thumbnail"><title>Placeholder</title>
+                                <rect width="100%" height="100%" fill="#55595c"/>
+                                <text x="50%" y="50%" fill="#eceeef" dy=".3em">{{ topic.user.username }}</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-md-6">
+                    <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-success">{{ topic.reply_num }}</strong>
+                            <h3 class="mb-0 text-line-1">{{ topic.title }}</h3>
+                            <div class="mb-1 text-muted">{{ topic.pub_date }}</div>
+                            <p class="mb-auto text-line-3">{{ topic.content }}</p>
+                            <a href="{% url 'app:topic_view' topic.id %}" class="stretched-link">查看详情</a>
+                        </div>
+                        <div class="col-auto d-none d-lg-block">
+                            <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                                 preserveAspectRatio="xMidYMid slice" focusable="false" role="img"
+                                 aria-label="Placeholder: Thumbnail"><title>Placeholder</title>
+                                <rect width="100%" height="100%" fill="#55595c"/>
+                                <text x="50%" y="50%" fill="#eceeef" dy=".3em">{{ topic.user.username }}</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
-    <hr>
-    <ul>
-        {% for topic in topic_list %}
-            <li>
-                <div>
-                    {{ topic.reply_num }} | {{ topic.user.username }} | {{ topic.pub_date }} |
-                    {% if topic.user.id == request.user.id %}
-                        <a href="{% url 'app:topic_del' topic.id %}">删除</a>
-                    {% endif %}
-                </div>
-                <div><a href="{% url 'app:topic_view' topic.id %}"><strong>{{ topic.title }}</strong></a></div>
-            </li>
-        {% endfor %}
-    </ul>
-    <div>
-        <ul>
+
+    <!-- 分页器 -->
+    <div class="dataTables_paginate paging_simple_numbers pull-right">
+        <ul class="pagination">
             {{ pagination.page_html|safe }}
         </ul>
     </div>

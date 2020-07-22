@@ -12,7 +12,7 @@ def topic_pub(request):
         category_id = request.POST.get('categoryId')
         # 新增话题
         Topic.objects.create(user_id=request.user.id, title=title, content=content, lang_id=category_id)
-        return redirect(reverse('app:index'))
+        return redirect(reverse('app:index', kwargs={'language': 'all'}))
     return render(request, 'app/topic_pub.html', {'category_list': Category.objects.all()})
 
 
@@ -30,7 +30,7 @@ def topic_del(request, topic_id):
         leave_word.delete()
     # 删除话题
     topic.delete()
-    return redirect(reverse('app:index'))
+    return redirect(reverse('app:index', kwargs={'language': 'all'}))
 
 
 # 话题详情

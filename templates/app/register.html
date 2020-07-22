@@ -1,23 +1,41 @@
 {% extends 'app/base.html' %}
+{% load staticfiles %}
 
 {% block title %}
     注册
 {% endblock %}
 
+{% block style %}
+    <link rel="stylesheet" href="{% static 'app/css/login.css' %}">
+{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
 {% block content %}
-    <h1>注册</h1>
-    <form action="{% url 'app:register' %}" method="post">
+    <form class="form-signin text-center" action="{% url 'app:register' %}" method="post">
         {% csrf_token %}
-        <span id="msg" style="color: red;"></span>
-        <label for="email">邮箱：<input type="email" id="email" name="email" maxlength="254" required></label><br>
-        <label for="user">用户名：<input type="text" id="user" name="user" maxlength="150" required></label><br>
-        <label for="pwd">密码：<input type="password" id="pwd" name="pwd" maxlength="128" required></label><br>
-        <label for="pwd2">确认密码：<input type="password" id="pwd2" name="pwd2" maxlength="128" required></label><br>
-        <label for="verCode">验证码：
-            <input type="text" maxlength="4" minlength="4" id="verCode" name="verCode" required>
-            <img src="{% url 'app:get_ver_code' %}" alt="验证码" id="imgCode" style="width: 120px;">
-        </label><br>
-        <input type="submit" value="注册" id="sub"> <a href="{% url 'app:login' %}">返回登录</a>
+        <img class="mb-4" src="{% url 'app:get_ver_code' %}" alt="验证码" id="imgCode" style="width: 120px;">
+        <h1 class="h3 mb-3 font-weight-normal">注册</h1>
+        <div role="alert" id="msg"></div>
+        <label for="inputUsername" class="sr-only">用户名：</label>
+        <input type="text" id="inputUsername" class="form-control" placeholder="请输入用户名：" name="user" maxlength="150"
+               required autofocus>
+        <label for="pwd" class="sr-only">密码：</label>
+        <input type="password" id="pwd" class="form-control" placeholder="请输入密码：" name="pwd" maxlength="128" required>
+        <label for="pwd2" class="sr-only">确认密码：</label>
+        <input type="password" id="pwd2" class="form-control" placeholder="请确认密码：" name="pwd2" maxlength="128" required>
+        <label for="inputVerCode" class="sr-only">验证码：</label>
+        <input type="text" id="inputVerCode" class="form-control" placeholder="请输入验证码：" name="verCode" maxlength="4"
+               minlength="4" required>
+        <br>
+        <div class="checkbox mb-3">
+            <label>
+                <a href="{% url 'app:login' %}">返回登录</a>
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="sub">注册</button>
     </form>
 {% endblock %}
 
@@ -28,7 +46,7 @@
 
             {% if msg %}
                 // 后端返回的提示
-                $msg.text('{{ msg }}');
+                $msg.attr('class', 'alert alert-danger').text('{{ msg }}');
             {% endif %}
 
             // 点击验证码图片更新

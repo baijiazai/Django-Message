@@ -5,18 +5,38 @@
 {% endblock %}
 
 {% block content %}
-    <h1>发布话题</h1>
+
     <form action="{% url 'app:topic_pub' %}" method="post">
         {% csrf_token %}
-        <label for="title">题目：<input type="text" id="title" name="title" maxlength="64" required></label><br>
-        <label for="categoryId">分类：
-            <select name="categoryId" id="categoryId">
+        <br>
+        <h1 class="text-center">发布话题</h1>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">题目：</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input"
+                   aria-describedby="inputGroup-sizing-default" name="title" maxlength="64" required>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="categoryId">分类：</label>
+            </div>
+            <select class="custom-select" name="categoryId" id="categoryId">
                 {% for category in category_list %}
                     <option value={{ category.id }}>{{ category.language }}</option>
                 {% endfor %}
             </select>
-        </label><br>
-        <label for="content">内容：<textarea id="content" name="content" cols="32" rows="16" required></textarea></label>
-        <br><input type="submit" value="发布" id="sub">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">内容：</span>
+            </div>
+            <textarea class="form-control" aria-label="With textarea" id="content" name="content" rows="8"
+                      required></textarea>
+        </div>
+
+        <br><input class="btn btn-primary btn-lg btn-block" type="submit" value="发布" id="sub">
     </form>
 {% endblock %}

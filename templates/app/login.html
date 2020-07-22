@@ -1,21 +1,40 @@
 {% extends 'app/base.html' %}
+{% load staticfiles %}
 
 {% block title %}
     登录
 {% endblock %}
 
+{% block style %}
+    <link rel="stylesheet" href="{% static 'app/css/login.css' %}">
+{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
 {% block content %}
-    <h1>登录</h1>
-    <form action="{% url 'app:login' %}" method="post">
+    <form class="form-signin text-center" action="{% url 'app:login' %}" method="post">
         {% csrf_token %}
-        <span id="msg" style="color: red;"></span>
-        <label for="user">用户名：<input type="text" id="user" name="user" maxlength="150" required></label><br>
-        <label for="pwd">密码：<input type="password" id="pwd" name="pwd" maxlength="128" required></label><br>
-        <label for="verCode">验证码：
-            <input type="text" maxlength="4" minlength="4" id="verCode" name="verCode" required>
-            <img src="{% url 'app:get_ver_code' %}" alt="验证码" id="imgCode" style="width: 120px;">
-        </label><br>
-        <input type="submit" value="登录" id="sub"> <a href="{% url 'app:register' %}">注册</a>
+        <img class="mb-4" src="{% url 'app:get_ver_code' %}" alt="验证码" id="imgCode" style="width: 120px;">
+        <h1 class="h3 mb-3 font-weight-normal">登录</h1>
+        <div role="alert" id="msg"></div>
+        <label for="inputUsername" class="sr-only">用户名：</label>
+        <input type="text" id="inputUsername" class="form-control" placeholder="请输入用户名：" name="user" maxlength="150"
+               required autofocus>
+        <label for="inputPassword" class="sr-only">密码：</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="请输入密码：" name="pwd" maxlength="128"
+               required>
+        <label for="inputVerCode" class="sr-only">验证码：</label>
+        <input type="text" id="inputVerCode" class="form-control" placeholder="请输入验证码：" name="verCode" maxlength="4"
+               minlength="4" required>
+        <br>
+        <div class="checkbox mb-3">
+            <label>
+                <a href="{% url 'app:register' %}">注册</a>
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
     </form>
 {% endblock %}
 
@@ -25,7 +44,7 @@
 
         {% if msg %}
             // 后端返回的提示
-            $msg.text('{{ msg }}');
+            $msg.attr('class', 'alert alert-danger').text('{{ msg }}');
         {% endif %}
 
         // 点击验证码图片更新

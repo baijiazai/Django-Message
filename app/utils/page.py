@@ -1,3 +1,6 @@
+import copy
+
+
 class Pagination(object):
     def __init__(self, current_page_num, all_count, request, per_page_num=10, pager_count=11):
         """
@@ -30,7 +33,6 @@ class Pagination(object):
         self.pager_count_half = int((pager_count - 1) / 2)  # 5
 
         # 保存搜索条件
-        import copy
         self.params = copy.deepcopy(request.GET)  # {"a":"1","b":"2"}
 
     # 开始
@@ -69,14 +71,14 @@ class Pagination(object):
 
         page_html_list = []
 
-        first_page = '<li><a href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >首页</a></li>' % (
+        first_page = '<li class="page-item"><a class="page-link" href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >首页</a></li>' % (
             1,)
         page_html_list.append(first_page)
 
         if self.current_page_num <= 1:
-            prev_page = '<li class="disabled"><a href="#" rel="external nofollow" rel="external nofollow" >上一页</a></li>'
+            prev_page = '<li class="page-item disabled"><a class="page-link" href="#" rel="external nofollow" rel="external nofollow" >上一页</a></li>'
         else:
-            prev_page = '<li><a href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >上一页</a></li>' % (
+            prev_page = '<li class="page-item"><a class="page-link" href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >上一页</a></li>' % (
                 self.current_page_num - 1,)
 
         page_html_list.append(prev_page)
@@ -88,20 +90,20 @@ class Pagination(object):
             self.params["page"] = i
 
             if i == self.current_page_num:
-                temp = '<li class="active"><a href="?%s" rel="external nofollow" rel="external nofollow" >%s</a></li>' % (
+                temp = '<li class="page-item active"><a class="page-link" href="?%s" rel="external nofollow" rel="external nofollow" >%s</a></li>' % (
                     self.params.urlencode(), i)
             else:
-                temp = '<li><a href="?%s" rel="external nofollow" rel="external nofollow" >%s</a></li>' % (
+                temp = '<li class="page-item"><a class="page-link" href="?%s" rel="external nofollow" rel="external nofollow" >%s</a></li>' % (
                     self.params.urlencode(), i,)
             page_html_list.append(temp)
 
         if self.current_page_num >= self.all_pager:
-            next_page = '<li class="disabled"><a href="#" rel="external nofollow" rel="external nofollow" >下一页</a></li>'
+            next_page = '<li class="page-item disabled"><a class="page-link" href="#" rel="external nofollow" rel="external nofollow" >下一页</a></li>'
         else:
-            next_page = '<li><a href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >下一页</a></li>' % (
+            next_page = '<li class="page-item"><a class="page-link" href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >下一页</a></li>' % (
                 self.current_page_num + 1,)
         page_html_list.append(next_page)
-        last_page = '<li><a href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >尾页</a></li>' % (
+        last_page = '<li class="page-item"><a class="page-link" href="?page=%s" rel="external nofollow" rel="external nofollow" rel="external nofollow" rel="external nofollow" >尾页</a></li>' % (
             self.all_pager,)
         page_html_list.append(last_page)
 
