@@ -4,7 +4,7 @@ from app.models import Topic
 
 
 def index(request):
-    topic_queryset = Topic.objects.all().order_by('-pub_date')
+    topic_queryset = Topic.objects.all().order_by('-pub_date', '-reply_num')
     context = {
         'topic_list': topic_queryset
     }

@@ -9,7 +9,7 @@
         {% for topic in topic_list %}
             <li>
                 <div>
-                    {{ topic.user.username }} | {{ topic.pub_date }} |
+                    {{ topic.reply_num }} | {{ topic.user.username }} | {{ topic.pub_date }} |
                     {% if topic.user.id == request.user.id %}
                         <a href="{% url 'app:topic_del' topic.id %}">删除</a>
                     {% endif %}

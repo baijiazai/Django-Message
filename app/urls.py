@@ -21,10 +21,12 @@ urlpatterns = [
     path('leave_word/', include([
         path('pub', topic.leave_word_pub, name='leave_word_pub'),
         path('del/<int:leave_word_id>', topic.leave_word_del, name='leave_word_del'),
+        path('zan/<int:leave_word_id>/<op>', topic.leave_word_zan, name='leave_word_zan'),
         # 留言回复发送、删除
         path('reply/', include([
             path('pub', topic.leave_word_reply_pub, name='leave_word_reply_pub'),
-            path('del/<int:leave_word_reply_id>', topic.leave_word_reply_del, name='leave_word_reply_del')
+            path('del/<int:leave_word_reply_id>', topic.leave_word_reply_del, name='leave_word_reply_del'),
+            path('zan/<int:leave_word_reply_id>/<op>', topic.leave_word_reply_zan, name='leave_word_reply_zan')
         ]))
     ]))
 ]

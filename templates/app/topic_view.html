@@ -14,7 +14,13 @@
         {% for leave_word in leave_word_list %}
             <li>
                 {{ leave_word.user.username }} : {{ leave_word.content }} | <small>{{ leave_word.pub_date }}</small> |
+                点赞：{{ leave_word.zan_num }}
                 <a href="javascript:;" class="reply" data-id="{{ leave_word.id }}">回复</a>
+                {% if leave_word.id in leave_word_zan_ids %}
+                    <a href="{% url 'app:leave_word_zan' leave_word.id 'sub' %}">取消点赞</a>
+                {% else %}
+                    <a href="{% url 'app:leave_word_zan' leave_word.id 'add' %}">点赞</a>
+                {% endif %}
                 {% if leave_word.user.id == request.user.id %}
                     | <a href="{% url 'app:leave_word_del' leave_word.id %}">删除</a>
                 {% endif %}
@@ -22,8 +28,14 @@
                     <ul>
                         {% for leave_word_reply in leave_word.leavewordreply_set.all %}
                             <li>
-                                {{ leave_word_reply.user.username }} 回复 {{ leave_word.user.username }} : {{ leave_word_reply.content }} |
-                                <small>{{ leave_word_reply.pub_date }}</small>
+                                {{ leave_word_reply.user.username }} 回复 {{ leave_word.user.username }}
+                                : {{ leave_word_reply.content }} |
+                                <small>{{ leave_word_reply.pub_date }}</small> | 点赞：{{ leave_word_reply.zan_num }}
+                                {% if leave_word_reply.id in leave_word_reply_zan_ids %}
+                                    <a href="{% url 'app:leave_word_reply_zan' leave_word_reply.id 'sub' %}">取消点赞</a>
+                                {% else %}
+                                    <a href="{% url 'app:leave_word_reply_zan' leave_word_reply.id 'add' %}">点赞</a>
+                                {% endif %}
                                 {% if leave_word_reply.user.id == request.user.id %}
                                     | <a href="{% url 'app:leave_word_reply_del' leave_word_reply.id %}">删除</a>
                                 {% endif %}
