@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
 
 from app.models import Topic, LeaveWord, LeaveWordReply, LeaveWordZan, LeaveWordReplyZan, Category
 
@@ -34,6 +35,7 @@ def topic_del(request, topic_id):
 
 
 # 话题详情
+@cache_page(timeout=15, cache='default')
 def topic_view(request, topic_id):
     # 话题对象
     topic = get_object_or_404(Topic, pk=topic_id)

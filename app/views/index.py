@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 
 from app.models import Topic, Category
 from app.utils.page import Pagination
 
 
+@cache_page(timeout=15, cache='default')
 def index(request, language):
     # 以语言为过滤条件
     if language == 'all':
