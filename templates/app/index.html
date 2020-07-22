@@ -5,6 +5,13 @@
 {% endblock %}
 
 {% block content %}
+    <div>
+        分类：<a href="{% url 'app:index' 'all' %}">全部</a>
+        {% for category in category_queryset %}
+            <a href="{% url 'app:index' category.language %}">{{ category.language }}</a>
+        {% endfor %}
+    </div>
+    <hr>
     <ul>
         {% for topic in topic_list %}
             <li>
@@ -18,4 +25,9 @@
             </li>
         {% endfor %}
     </ul>
+    <div>
+        <ul>
+            {{ pagination.page_html|safe }}
+        </ul>
+    </div>
 {% endblock %}

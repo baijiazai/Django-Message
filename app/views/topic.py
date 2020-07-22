@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
-from app.models import Topic, LeaveWord, LeaveWordReply, LeaveWordZan, LeaveWordReplyZan
+from app.models import Topic, LeaveWord, LeaveWordReply, LeaveWordZan, LeaveWordReplyZan, Category
 
 
 # 发布话题
@@ -9,10 +9,11 @@ def topic_pub(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
+        category_id = request.POST.get('categoryId')
         # 新增话题
-        Topic.objects.create(user_id=request.user.id, title=title, content=content)
+        Topic.objects.create(user_id=request.user.id, title=title, content=content, lang_id=category_id)
         return redirect(reverse('app:index'))
-    return render(request, 'app/topic_pub.html')
+    return render(request, 'app/topic_pub.html', {'category_list': Category.objects.all()})
 
 
 # 删除话题

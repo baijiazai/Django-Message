@@ -5,7 +5,7 @@ from app.views import user_login, index, topic
 app_name = 'app'
 urlpatterns = [
     # 首页
-    path('', index.index, name='index'),
+    path('<language>', index.index, name='index'),
     # 登录、退出登录、注册、验证码
     path('login', user_login.login, name='login'),
     path('logout', user_login.logout, name='logout'),

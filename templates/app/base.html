@@ -10,7 +10,7 @@
 <body>
 {% block header %}
     <hr>
-    <a href="{% url 'app:index' %}">首页</a>
+    <a href="{% url 'app:index' 'all' %}">首页</a>
     <a href="{% url 'app:topic_pub' %}">发布</a>
     {% if request.user.username %}
         用户：{{ request.user.username }}

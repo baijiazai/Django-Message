@@ -2,6 +2,14 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+# 分类表
+class Category(models.Model):
+    language = models.CharField('语言', max_length=16)
+
+    class Meta:
+        verbose_name_plural = '分类'
+
+
 # 话题表
 class Topic(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
@@ -9,6 +17,7 @@ class Topic(models.Model):
     content = models.TextField('内容')
     pub_date = models.DateTimeField('发布时间', auto_now=True)
     reply_num = models.IntegerField('回复数量', default=0)
+    lang = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, verbose_name='分类')
 
     class Meta:
         verbose_name_plural = '话题'

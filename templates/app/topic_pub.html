@@ -9,6 +9,13 @@
     <form action="{% url 'app:topic_pub' %}" method="post">
         {% csrf_token %}
         <label for="title">题目：<input type="text" id="title" name="title" maxlength="64" required></label><br>
+        <label for="categoryId">分类：
+            <select name="categoryId" id="categoryId">
+                {% for category in category_list %}
+                    <option value={{ category.id }}>{{ category.language }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
         <label for="content">内容：<textarea id="content" name="content" cols="32" rows="16" required></textarea></label>
         <br><input type="submit" value="发布" id="sub">
     </form>
